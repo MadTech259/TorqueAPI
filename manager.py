@@ -9,12 +9,43 @@ import configuration
 
 class ScoreManager:
     def __init__(self):
-        self.serializable_file = configuration.filename
+        self.serialized_heap = configuration.heap_file
+        self.serialized_dict = configuration.dict_file
         self.score_heap = []
         self.score_dict = {}
+        self.load_data()
+
+
+    def serialize(self):
+        heap_str = json.dumps(self.score_heap)
+        dict_str = json.dumps(self.score_dict)
+
+        f = open(self.serialized_heap, "w")
+        f.write(heap_str)
+        f.close()
+
+        f = open(self.serialized_dict, "w")
+        f.write(dict_str)
+        f.close()
+
+
+    def load_data(self):
+        f = open(self.serialized_heap, "r")
+        str = f.read()
+        f.close()
+        if(str != ""):
+            self.score_heap = json.loads(str)
+
+        f = open(self.serialized_dict, "r")
+        str = f.read()
+        f.close()
+        if (str != ""):
+            self.score_dict = json.loads(str)
+
 
     def heap_insert(self, score):
         heapq.heappush(self.score_heap, (int(score["puntos"]), score))
+        self.serialize()
 
     def insert_score(self, score):
         name = score['nombre']
